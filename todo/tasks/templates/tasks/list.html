@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Tarefas {% endblock %}
+
+{% block content %}
+ 
+  <div class="offset-1 col-10 lit-div">
+  	<h1>Lista de Tarefas</h1>
+    <div class="container dashboard" style="padding: 0; width: 100% ; display: block ;">
+
+      <div style="float: left ;
+                background-color:red ;color: #FFF ;padding: 20px; box-sizing: border-box ;height: 130px ;width: 32% ;
+                text-align: center ;" class="col-4 dashboard-box" id="dashboard-lastdays">
+
+                <h4 style="font-size: 20px">Finalizadas nos últimos 30 dias</h4>
+                <span style="font-size: 40px; display: block ;
+                    width: 100% ;">0</span>
+      </div>
+
+      <div style="float: left ;
+              background-color: blue ; color: #FFF ;padding: 20px ;
+              box-sizing: border-box ;height: 130px ; width: 32% ;
+              text-align: center;margin-left: 1.5% ; margin-right: 1.5%" class="col-4 dashboard-box" id="dashboard-done">
+
+              <h4 style="font-size: 20px">Tarefas Finalizadas</h4>
+
+              <span style="font-size: 40px ;display: block ;width: 100% ;">0</span>
+      </div>
+
+      <div style="float: left ;background-color:green ;color: #FFF ;
+            padding: 20px ;box-sizing: border-box ;height: 130px; width: 32% ;text-align: center ;" class="col-4 dashboard-box" id="dashboard-doing">
+
+            <h4 style="font-size: 20px">Tarefas a Fazer</h4>
+
+            <span style="font-size: 40px;display: block ;width: 100% ;">1</span>
+      </div>
+
+    </div>
+
+    <a id="add-link" href="newtask/">
+    	<div class="col-2 add-div">
+    		<i class="fas fa-plus">Adicionar Tarefa</i>
+    	</div>
+    </a>
+
+    
+  	<div class="col-9 search-div">
+      <form method="GET" id="search-form">
+    		<input class="form-control" type="text" id="search" placeholder="Digite o nome da tarefa para buscar" value="{{ request.GET.search }}" name="search">
+    		<i class="fas fa-search" id="search-btn"></i>
+  		</form>
+  	</div>
+    
+    <div class="col-12 filter-div">
+
+      <span>Filtrar por:</span>
+      <select name="filter" id="filter" class="form-control">
+        <option value="">Escolha uma opção</option>
+        <option value="done">Tarefas Concluidas</option>
+        <option value="doing">Tarefas a Fazer</option>
+      </select>
+      
+    </div>
+
+     <!-- Mensagem ao deletar tarefa -->
+    {% if messages %}
+       <ul class="messages">
+         
+          {% for message in messages %}
+
+              <li {% if message.tags %}class="alert alert-{{messages.tag}}"{% endif %}>{{ message }}</li>
+
+
+          {% endfor %}
+
+       </ul>
+ 
+    {% endif %}
+
+  	<ul class="task-list">
+      {% for task in tasks %}
+      {% if task.done == 'doing' %}
+          <li class="task-item">
+      {% else %} 
+          <li class="task-item done">
+      {% endif %}     
+        		<span><a href="/task/{{task.id}}">{{task.title}}</a></span>
+        		<a href="delete/{{task.id}}" class="delete-btn"><span><i class="fas fa-trash"></i></span></a>
+        		<a href="edit/{{task.id}}"><span><i class="fas fa-edit"></i></span></a>
+            <a href="changestatus/{{task.id}}"><span><i class="fas fa-check"></i></span></a>
+          </li>
+          
+       {% endfor %}
+    
+  	</ul>
+
+    <!-- Paginação do site -->
+    <div class="pagination">
+      <span class="step-links">
+        {% if tasks.has_previous %}
+
+            <a href="?page={{ tasks.previous_page_number }}"><i class="fas fa-arrow-left"></i><</a>
+
+        {% endif %}
+        
+        {% if tasks.paginator.num_pages %}
+        <span class="current">
+
+          {{ tasks.number }} de {{ tasks.paginator.num_pages }}
+
+        </span>
+        {% endif %}
+        
+        {% if tasks.has_previous %}
+
+            <a href="?page={{ tasks.next_page_number }}"><i class="fas fa-arrow-right"></i></a>
+
+        {% endif %}
+        
+      </span>    
+    </div>
+
+  </div>
+
+{% endblock %}
